@@ -6,8 +6,6 @@ WORKDIR /usr/src/app
 
 # Use the node user from the image (instead of the root user)
 USER node
-RUN mkdir -p /usr/src/app
-RUN mkdir -p /var/www/html
 COPY --chown=node:node ./backend /usr/src/app
 COPY --chown=node:node ./frontend/build /var/www/html
 
