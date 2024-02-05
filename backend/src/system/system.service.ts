@@ -28,7 +28,7 @@ export class SystemService {
         const rows = (await this.repoLong.manager.query(
           `SELECT count (*) cnt from ${tables[i].name}`,
         )) as Array<{ cnt: number }>;
-        res.push({ type: tables[i], cnt: rows[0].cnt });
+        res.push({ type: tables[i].name, cnt: rows[0].cnt });
       }
       return res;
     }
@@ -61,7 +61,7 @@ export class SystemService {
         const rows = (await this.repoLong.manager.query(
           `SELECT SUM("pgsize") cnt FROM "dbstat" WHERE name='${tables[i].name}';`,
         )) as Array<{ cnt: number }>;
-        res.push({ type: tables[i], cnt: rows[0].cnt });
+        res.push({ type: tables[i].name, cnt: rows[0].cnt });
       }
       return res;
     }
