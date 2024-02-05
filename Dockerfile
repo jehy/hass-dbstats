@@ -13,6 +13,7 @@ COPY --chown=node:node ./frontend/build /var/www/html
 
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
+RUN npm ci --omit=dev # reinstall deps since they can be binary incompatible
 
 EXPOSE 3000
 
