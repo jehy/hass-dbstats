@@ -14,7 +14,7 @@ npm ci
 cd ../shared
 npm ci
 cd../backend
-npm start
+DB_CONNECT_STRING=postgresql://LOGIN:PASSWORD@172.17.0.1:5432/DATABASE npm start
 ```
 and in another console
 ```shell
