@@ -42,9 +42,13 @@ export class ConfigService {
   constructor(haHomeDir?: string) {
     this.logger = new Logger(ConfigService.name);
     const { env } = process;
+
+    const haAddonOptions =
+      fs.existsSync('/data/options.json') &&
+      JSON.parse(fs.readFileSync('/data/options.json', 'utf8'));
     const typeOrmConfig = this.extractRecorderConfig(
       haHomeDir || env.HOME_DIR || '/homeassistant',
-      env.DB_CONNECT_STRING,
+      haAddonOptions?.connectionString || env.DB_CONNECT_STRING,
     );
     this.secretCache = {};
     this.data = {
@@ -283,7 +287,15 @@ postgresql://@/DB_NAME?host=/path/to/dir
       );
       return { ...res, ...{ [fileName]: newData } };
     }, {});
-    return { ...(data.trim() ? YAML.load(data) : {}), additional };
+    let loaded = {};
+    try {
+      loaded = data.trim() ? YAML.load(data) : {};
+    } catch (err) {
+      this.logger.warn(
+        `Failed to parse ${absPath}: ${err.message}, will try without it`,
+      );
+    }
+    return { ...loaded, additional };
   }
 
   extractRecorderConfig(

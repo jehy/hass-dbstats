@@ -11,6 +11,15 @@ describe('Config Service', () => {
       url: 'postgresql://***@192.168.66.30:5432/homeass',
     });
   });
+  it('should not die on non valid yaml', () => {
+    const res = new ConfigService(
+      path.join(__dirname, 'testConfigs/non_valid_yaml'),
+    );
+    expect(res.data.typeOrmConfig).toEqual({
+      type: 'postgres',
+      url: 'postgresql://***@192.168.66.30:5432/homeass',
+    });
+  });
   it('should find and parse connection string in secrets', () => {
     const res = new ConfigService(
       path.join(__dirname, 'testConfigs/postgres_with_secrets'),
@@ -78,7 +87,7 @@ describe('Config Service', () => {
   });
   it('should not fail if some files dont exist in reality', () => {
     const res = new ConfigService(
-      path.join(__dirname, 'testConfigs/badConfig'),
+      path.join(__dirname, 'testConfigs/files_dont_exist'),
     );
     expect(res.data.typeOrmConfig).toEqual({
       type: 'postgres',
