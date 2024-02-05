@@ -1,7 +1,7 @@
 # Ha DBStats
 
 That's a small Node.JS and React app to check database usage.
-Yu can install it ias addon from [this repository](https://github.com/jehy/hass-addons).
+You can install it as addon from [this repository](https://github.com/jehy/hass-addons).
 
 ## Local development
 Install node version manager, install node 20, and run:
@@ -41,4 +41,4 @@ services:
     volumes:
       - hass_config:/homeassistant:ro
 ```
-Please not that you should **either** pass **DB_CONNECT_STRING** or set volume `/homeassistant` to the location of where your config file resides.
+Please note that you should **either** pass **DB_CONNECT_STRING** or set volume `/homeassistant` to the location of where your config file resides.
