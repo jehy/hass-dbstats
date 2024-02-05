@@ -1,7 +1,7 @@
 # Ha DBStats
 
 That's a small Node.JS and React app to check database usage.
-Yu can install it ias addon from [this repository](https://github.com/jehy/hass-addons/actions).
+Yu can install it ias addon from [this repository](https://github.com/jehy/hass-addons).
 
 ## Local development
 Install node version manager, install node 20, and run:
