@@ -20,6 +20,15 @@ describe('Config Service', () => {
       url: 'postgresql://***@192.168.66.30:5432/homeass',
     });
   });
+  it('should handle multiple secrets', () => {
+    const res = new ConfigService(
+      path.join(__dirname, 'testConfigs/multiple_secrets'),
+    );
+    expect(res.data.typeOrmConfig).toEqual({
+      type: 'postgres',
+      url: 'postgresql://***@192.168.66.30:5432/homeass',
+    });
+  });
   it('should find and parse connection string in packages', () => {
     const res = new ConfigService(
       path.join(__dirname, 'testConfigs/postgres_with_packages'),

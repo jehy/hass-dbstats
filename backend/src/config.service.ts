@@ -159,7 +159,7 @@ postgresql://@/DB_NAME?host=/path/to/dir
   replaceSecrets(data: string, secrets: Record<string, string>) {
     return Object.entries(secrets as Record<string, string>).reduce(
       (res, [secretName, secretValue]) => {
-        return res.replace(`!secret ${secretName}`, secretValue);
+        return res.split(`!secret ${secretName}`).join(secretValue);
       },
       data,
     );
@@ -210,7 +210,16 @@ postgresql://@/DB_NAME?host=/path/to/dir
       .filter((el) => el)
       .join('\n');
     //this.logger.log(`noIncludes`, noIncludes);
-    const noSecrets = this.replaceSecrets(noIncludes, secrets);
+    const noSecrets = this.replaceSecrets(noIncludes, secrets)
+      .split('\n')
+      .map((line) => {
+        if (line.includes('!secret')) {
+          this.logger.warn(`Failed to replace ${line} - is this secret valid?`);
+          return line.replace('!secret', 'secret');
+        }
+        return line;
+      })
+      .join('\n');
     //this.logger.log(`noSecrets`, noSecrets);
     const res = { data: noSecrets, foundFilesOrDirs };
     //this.logger.log(res);
@@ -249,7 +258,7 @@ postgresql://@/DB_NAME?host=/path/to/dir
     this.logger.log(`Input: abspath ${absPath} homeDir ${haHomeDir}`);
     if (!fs.existsSync(absPath)) {
       this.logger.warn(
-          `Warn: path ${absPath} found in config but it does not exist!`,
+        `Warn: path ${absPath} found in config but it does not exist!`,
       );
       return {};
     }
