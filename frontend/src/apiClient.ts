@@ -118,7 +118,7 @@ async function getTableSize(): Promise<Array<ICountStats>> {
 
 async function getDbAlerts(): Promise<Array<IShowAlerts>> {
 
-    const url = `/addon-api/system/gettDbAlerts`;
+    const url = `/addon-api/system/getDbAlerts`;
     const response = await fetch(url, {
         method: 'GET', // *GET, POST, PUT, DELETE, etc.
         headers: getHeaders(),
