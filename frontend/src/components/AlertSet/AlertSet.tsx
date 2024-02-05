@@ -22,7 +22,7 @@ export const AlertSet: FC<AlertSetProps> = ({api}) => {
         const fetchData = async () => {
             setLoading(true);
             const response = await api();
-            setData({response});
+            setData(response);
             setLoading(false);
         }
         fetchData()

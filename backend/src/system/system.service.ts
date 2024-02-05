@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import type { ICountStats, IShowAlerts } from '@dbstats/shared/src/stats';
 import { Statistics } from '../entities/homeass/2024.1.5/Statistics';
 import configProvider from '../config';
+import {version} from '../../package.json'
 
 @Injectable()
 export class SystemService {
@@ -91,13 +92,17 @@ ORDER BY (data_length + index_length) DESC;`);
 
   async getDbAlerts(): Promise<Array<IShowAlerts>> {
     const alerts: Array<IShowAlerts> = [];
-    const dbType = configProvider().typeOrmConfig.type;
+    /*const dbType = configProvider().typeOrmConfig.type;
     if (dbType === 'sqlite') {
       alerts.push({
         type: 'info',
         text: `If you're using sqlite and updated you database, you'll have to restart addon to reflect changes`,
       });
-    }
+    }*/
+    alerts.push({
+      type: 'info',
+      text: `Running dbstats version ${version}`,
+    });
     return alerts;
   }
 }
