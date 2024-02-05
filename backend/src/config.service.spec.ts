@@ -58,4 +58,13 @@ describe('Config Service', () => {
       new ConfigService(path.join(__dirname, 'testConfigs/nothing_found'));
     expect(throws).toThrow();
   });
+  it('should find and parse include files', () => {
+    const res = new ConfigService(
+      path.join(__dirname, 'testConfigs/postgres_in_include'),
+    );
+    expect(res.data.typeOrmConfig).toEqual({
+      type: 'postgres',
+      url: 'postgresql://***@192.168.66.30:5432/homeass',
+    });
+  });
 });

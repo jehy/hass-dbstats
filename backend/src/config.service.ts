@@ -6,19 +6,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import type { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionOptions';
 import type { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
-import * as util from 'util';
-import * as childProcess from 'child_process';
-const exec = util.promisify(childProcess.exec);
-
-async function execPromise(command: string) {
-  try {
-    const { stdout, stderr } = await exec(command);
-    console.log('stdout:', stdout);
-    console.log('stderr:', stderr);
-  } catch (e) {
-    console.error(e); // should contain code (exit code) and signal (that caused the termination).
-  }
-}
 
 type DBType = DataSourceOptions['type'];
 
@@ -79,7 +66,7 @@ export class ConfigService {
       });
     });
     if (errorMessages.length) {
-      console.log(errorMessages.join('\n'));
+      this.logger.log(errorMessages.join('\n'));
       process.exit(1);
     }
   }
@@ -169,25 +156,65 @@ postgresql://@/DB_NAME?host=/path/to/dir
     throw new Error(`Unknown database type ${dbType}`);
   }
 
-  fixYaml(data: string, secrets: Record<string, string>) {
-    // UGLY workaround because those yaml tags are non-standard and otherwise parser throws on them :(
-    const badTags = [
-      'include_dir_merge_list',
-      'include',
-      'include_dir_list',
-      'include_dir_named',
-      'include_dir_merge_named',
-    ];
-    const noUnknownTags = badTags.reduce(
-      (res, item) => res.split(`!${item}`).join(item),
-      data,
-    );
+  replaceSecrets(data: string, secrets: Record<string, string>) {
     return Object.entries(secrets as Record<string, string>).reduce(
       (res, [secretName, secretValue]) => {
         return res.replace(`!secret ${secretName}`, secretValue);
       },
-      noUnknownTags,
+      data,
     );
+  }
+
+  fixYaml(
+    data: string,
+    secrets: Record<string, string>,
+  ): { data: string; foundFilesOrDirs: Array<string> } {
+    // UGLY workaround because those yaml tags are non-standard and otherwise parser throws on them :(
+
+    //this.logger.log(`data`, data);
+    const noComments = data
+      .split('\n')
+      .filter((el) => !el.trim().startsWith('#'))
+      .join('\n');
+    //this.logger.log(`noComments`, noComments);
+    const ignoreTags = ['env_var', 'input'];
+    const noUnknownTags = ignoreTags.reduce(
+      (res, item) => res.split(`!${item}`).join(item),
+      noComments,
+    );
+    //this.logger.log(`NoUnknownTags`, noUnknownTags);
+    // https://github.com/home-assistant/core/blob/30710815f01fa1d184f1625c5a74f5e20e9f42a5/homeassistant/util/yaml/loader.py
+    const includes = [
+      'include_dir_merge_list',
+      'include_dir_list',
+      'include_dir_named',
+      'include_dir_merge_named',
+      'include',
+    ];
+    const foundFilesOrDirs = [];
+    const noIncludes = noUnknownTags
+      .split('\n')
+      .map((str) => {
+        return includes.reduce((res, item) => {
+          if (!res) {
+            return '';
+          }
+          const search = res.split(`!${item}`);
+          if (search.length === 1) {
+            return res;
+          }
+          foundFilesOrDirs.push(search[1].trim());
+          return '';
+        }, str);
+      })
+      .filter((el) => el)
+      .join('\n');
+    //this.logger.log(`noIncludes`, noIncludes);
+    const noSecrets = this.replaceSecrets(noIncludes, secrets);
+    //this.logger.log(`noSecrets`, noSecrets);
+    const res = { data: noSecrets, foundFilesOrDirs };
+    //this.logger.log(res);
+    return res;
   }
 
   loadSecrets(dir: string, homeDir: string): Record<string, string> {
@@ -199,26 +226,49 @@ postgresql://@/DB_NAME?host=/path/to/dir
       this.logger.log(`found and parsed secrets file`);
       return YAML.load(fs.readFileSync(secretsFileName, 'utf-8'));
     }
-    if (
-      path.resolve(path.dirname(dir)) !== path.resolve(path.dirname(homeDir))
-    ) {
-      this.secretCache[dir] = this.loadSecrets(path.join(dir, '../'), homeDir);
-      return this.secretCache[dir];
-    }
     this.secretCache[dir] = {};
+    let currentDir = dir;
+    let secretsFound = false;
+    while (currentDir.length > homeDir.length && !secretsFound) {
+      currentDir = path.join(currentDir, '../');
+      this.logger.log(`going up to ${currentDir}`);
+      const upperDirSecrets = this.loadSecrets(currentDir, homeDir);
+      if (Object.keys(upperDirSecrets).length !== 0) {
+        secretsFound = true;
+        this.secretCache[dir] = {
+          ...this.secretCache[dir],
+          ...upperDirSecrets,
+        };
+        return this.secretCache[dir];
+      }
+    }
     return {};
   }
 
-  loadYaml(filePath: string, haHomeDir) {
-    const data = fs.readFileSync(filePath, 'utf-8');
-    const secrets = this.loadSecrets(
-      path.resolve(path.dirname(filePath)),
-      haHomeDir,
-    );
+  loadYaml(absPath: string, haHomeDir) {
+    this.logger.log(`Input: abspath ${absPath} homeDir ${haHomeDir}`);
+    if (fs.lstatSync(absPath).isDirectory()) {
+      return fs
+        .readdirSync(absPath, { recursive: true, encoding: 'utf-8' })
+        .map((file) => path.join(absPath, file))
+        .filter((file) => file.endsWith('.yaml'))
+        .map((file) => this.loadYaml(file, haHomeDir));
+    }
+    const text = fs.readFileSync(absPath, 'utf-8');
+    const secrets = this.loadSecrets(path.dirname(absPath), haHomeDir);
     this.logger.log(
-      `${Object.keys(secrets).length} secrets found for file ${filePath}`,
+      `${Object.keys(secrets).length} secrets found for file ${absPath}`,
     );
-    return YAML.load(this.fixYaml(data, secrets));
+    const { data, foundFilesOrDirs } = this.fixYaml(text, secrets);
+    //this.logger.log(`Found files:`, foundFilesOrDirs);
+    const additional = foundFilesOrDirs.reduce((res, fileName) => {
+      const newData = this.loadYaml(
+        path.join(path.dirname(absPath), fileName),
+        haHomeDir,
+      );
+      return { ...res, ...{ [fileName]: newData } };
+    }, {});
+    return { ...(data.trim() ? YAML.load(data) : {}), additional };
   }
 
   extractRecorderConfig(
@@ -243,46 +293,15 @@ postgresql://@/DB_NAME?host=/path/to/dir
     const data = this.loadYaml(configFileName, haHomeDir);
     this.logger.log(`parsed config file`);
 
-    if (data?.recorder?.db_url) {
+    const recorder = findKey(data, 'recorder');
+    if (recorder?.db_url) {
       this.logger.log(`found recorder config, gonna use it`);
-      return ConfigService.connectionStringToDatabaseOptions(
-        data.recorder.db_url,
-      );
-    }
-    if (data?.homeassistant?.packages) {
-      this.logger.log(`found packages, gonna check it`);
-      const localDir = data.homeassistant.packages.split(' ')[1];
-      const packagesDir = path.join(haHomeDir, localDir);
-      if (!fs.existsSync(packagesDir)) {
-        throw new Error(`packages dir ${packagesDir} does not exist!`);
-      }
-      this.logger.log(
-        `checking packages files from ${packagesDir} for database config`,
-      );
-      const files = fs
-        .readdirSync(packagesDir, { recursive: true, encoding: 'utf-8' })
-        .filter((file) => file.endsWith('.yaml'));
-      const connectStringFound = files
-        .map((file) => this.loadYaml(path.join(packagesDir, file), haHomeDir))
-        .map((content) => {
-          const recorder = findKey(content, 'recorder');
-          return recorder?.db_url;
-        })
-        .filter((el) => el)?.[0];
-      if (connectStringFound) {
-        this.logger.log(`Found database options in packages, gonna use it`);
-        return ConfigService.connectionStringToDatabaseOptions(
-          connectStringFound,
-        );
-      }
-      this.logger.log(`not found database options in packages`);
+      return ConfigService.connectionStringToDatabaseOptions(recorder.db_url);
     }
     this.logger.log(
       `recorder options not found, gonna try standard database path`,
     );
-    const sqliteFileName = path.resolve(
-      path.join(haHomeDir, '/home-assistant_v2.db'),
-    );
+    const sqliteFileName = path.join(haHomeDir, '/home-assistant_v2.db');
     if (!fs.existsSync(sqliteFileName)) {
       throw new Error(`SQLite database file not found in ${sqliteFileName}`);
     }
