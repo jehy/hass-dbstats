@@ -247,6 +247,12 @@ postgresql://@/DB_NAME?host=/path/to/dir
 
   loadYaml(absPath: string, haHomeDir) {
     this.logger.log(`Input: abspath ${absPath} homeDir ${haHomeDir}`);
+    if (!fs.existsSync(absPath)) {
+      this.logger.warn(
+          `Warn: path ${absPath} found in config but it does not exist!`,
+      );
+      return {};
+    }
     if (fs.lstatSync(absPath).isDirectory()) {
       return fs
         .readdirSync(absPath, { recursive: true, encoding: 'utf-8' })

@@ -67,4 +67,13 @@ describe('Config Service', () => {
       url: 'postgresql://***@192.168.66.30:5432/homeass',
     });
   });
+  it('should not fail if some files dont exist in reality', () => {
+    const res = new ConfigService(
+      path.join(__dirname, 'testConfigs/badConfig'),
+    );
+    expect(res.data.typeOrmConfig).toEqual({
+      type: 'postgres',
+      url: 'postgresql://***@192.168.66.30:5432/homeass',
+    });
+  });
 });
