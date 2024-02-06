@@ -92,16 +92,10 @@ ORDER BY (data_length + index_length) DESC;`);
 
   async getDbAlerts(): Promise<Array<IShowAlerts>> {
     const alerts: Array<IShowAlerts> = [];
-    /*const dbType = configProvider().typeOrmConfig.type;
-    if (dbType === 'sqlite') {
-      alerts.push({
-        type: 'info',
-        text: `If you're using sqlite and updated you database, you'll have to restart addon to reflect changes`,
-      });
-    }*/
+    const dbType = configProvider().typeOrmConfig.type;
     alerts.push({
       type: 'info',
-      text: `Running dbstats version ${version}`,
+      text: `Running with dbstats core version ${version} on database type ${dbType}`,
     });
     return alerts;
   }

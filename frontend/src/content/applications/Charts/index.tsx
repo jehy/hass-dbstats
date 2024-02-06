@@ -35,52 +35,45 @@ function DatabaseStats() {
                     <Grid item xs={12}>
                         <Card style={{marginTop: 5}}>
                             <CardHeader title="Generic database stats"></CardHeader>
-                            <Alert severity="info">If you are unfamilar with HA tables, you can read about them <Link href="https://data.home-assistant.io/docs/data">here</Link></Alert>
-                            <AlertSet api={apiClient.system.getDbAlerts}></AlertSet>
                             <CardContent>
-                                <Alert severity="info"></Alert>
+                                <Alert severity="info">If you are unfamiliar with HA tables, you can read about them <Link href="https://data.home-assistant.io/docs/data">here</Link></Alert>
+                                <AlertSet api={apiClient.system.getDbAlerts}></AlertSet>
                                 <CountStatsChart api={apiClient.system.getTableRows}
                                                  title="Number of rows in tables"/>
-                            </CardContent>
-
-                            <CardContent>
                                 <CountStatsChart api={apiClient.system.getTableSize}
                                                  title="Table size in MB"/>
                             </CardContent></Card>
                         <Card style={{marginTop: 5}}>
-                            <CardHeader title="Events stats"></CardHeader>
+                            <CardHeader title="Events"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.events.countEventTypes}
                                                  title="Count event types"/>
-                            </CardContent>
-
-                            <CardContent>
                                 <CountStatsChart api={apiClient.events.countEventsByDomain}
                                                  title="Count events by domain"/>
                             </CardContent></Card>
                         <Card style={{marginTop: 5}}>
-                            <CardHeader title="States stats"></CardHeader>
+                            <CardHeader title="States"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.states.countStates}
                                                  title="Count states"/>
                             </CardContent></Card>
                         <Card style={{marginTop: 5}}>
-                            <CardHeader title="Attributes stats"></CardHeader>
+                            <CardHeader title="Attributes"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.states.countAttributesSize}
                                                  title="Count attributes size, MB"/>
                             </CardContent></Card>
                         <Card style={{marginTop: 5}}>
-                            <CardHeader title="Long term stats"></CardHeader>
+                            <CardHeader title="Long term statistics"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.statistic.countLong}
-                                                 title="Count long term stats"/>
+                                                 title="Count long term statistics"/>
                             </CardContent></Card>
                         <Card style={{marginTop: 5}}>
-                            <CardHeader title="Short term stats"></CardHeader>
+                            <CardHeader title="Short term statistics"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.statistic.countShort}
-                                                 title="Count short term stats"/>
+                                                 title="Count short term statistics"/>
                             </CardContent></Card>
                     </Grid>
                 </Grid>
