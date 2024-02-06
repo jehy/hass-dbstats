@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import type { ICountStats, IShowAlerts } from '@dbstats/shared/src/stats';
 import { Statistics } from '../entities/homeass/2024.1.5/Statistics';
 import configProvider from '../config';
-import {version} from '../../package.json'
+import { version } from '../../package.json';
 
 @Injectable()
 export class SystemService {
@@ -31,7 +31,7 @@ export class SystemService {
         )) as Array<{ cnt: number }>;
         res.push({ type: tables[i].name, cnt: rows[0].cnt });
       }
-      return res;
+      return res.sort((a, b) => b.cnt - a.cnt);
     }
     if (dbType === 'postgres') {
       const data = await this.repoLong.manager
@@ -43,7 +43,7 @@ export class SystemService {
     if (dbType === 'mysql') {
       // TODO: get only table rows from HA
       const data = await this.repoLong.manager.query(
-        `SELECT table_name type, TABLE_ROWS cnt FROM INFORMATION_SCHEMA.TABLES`,
+        `SELECT table_name type, TABLE_ROWS cnt FROM INFORMATION_SCHEMA.TABLES order by TABLE_ROWS DESC`,
       );
       return data;
     }
@@ -60,11 +60,11 @@ export class SystemService {
       const res = [];
       for (let i = 0; i < tables.length; i++) {
         const rows = (await this.repoLong.manager.query(
-          `SELECT SUM("pgsize") cnt FROM "dbstat" WHERE name='${tables[i].name}';`,
+          `SELECT SUM("pgsize")/1024/1024 cnt FROM "dbstat" WHERE name='${tables[i].name}';`,
         )) as Array<{ cnt: number }>;
         res.push({ type: tables[i].name, cnt: rows[0].cnt });
       }
-      return res;
+      return res.sort((a, b) => b.cnt - a.cnt);
     }
     if (dbType === 'postgres') {
       const data = await this.repoLong.manager.query(`select
