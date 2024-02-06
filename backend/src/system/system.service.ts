@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { ICountStats, IShowAlerts } from '@dbstats/shared/src/stats';
@@ -8,10 +8,13 @@ import { version } from '../../package.json';
 
 @Injectable()
 export class SystemService {
+  private logger: Logger;
   constructor(
     @InjectRepository(Statistics, 'homeass')
     private repoLong: Repository<Statistics>,
-  ) {}
+  ) {
+    this.logger = new Logger(SystemService.name);
+  }
 
   private async getSqliteTables() {
     return (await this.repoLong.manager.query(
@@ -90,12 +93,46 @@ ORDER BY (data_length + index_length) DESC;`);
     );
   }
 
+  async getVerstion(): Promise<string> {
+    const dbType = configProvider().typeOrmConfig.type;
+    if (dbType === 'sqlite') {
+      const data = (await this.repoLong.manager.query(
+        `SELECT sqlite_version() as version`,
+      )) as Array<{ version: string }>;
+      return data[0].version;
+    }
+    if (dbType === 'postgres') {
+      const data = (await this.repoLong.manager.query(
+        `SELECT VERSION() as version;`,
+      )) as Array<{ version: string }>;
+      return data[0].version;
+    }
+    if (dbType === 'mysql') {
+      const data = (await this.repoLong.manager.query(
+        `SELECT VERSION() as version`,
+      )) as Array<{ version: string }>;
+      return data[0].version;
+    }
+    throw new BadRequestException(
+      `Database type ${dbType} not supported yet for this chart`,
+    );
+  }
+
   async getDbAlerts(): Promise<Array<IShowAlerts>> {
     const alerts: Array<IShowAlerts> = [];
     const dbType = configProvider().typeOrmConfig.type;
+    let dbVersion = 'unknown';
+    try {
+      dbVersion = await this.getVerstion();
+      if (dbVersion.length > 42) {
+        dbVersion = dbVersion.substring(0, 42).trim() + '...';
+      }
+    } catch (err) {
+      this.logger.warn(`Failed to get database version: ${err.message}`);
+    }
     alerts.push({
       type: 'info',
-      text: `Running with dbstats core version ${version} on database type ${dbType}`,
+      text: `Running with dbstats core version ${version} on database type ${dbType} version ${dbVersion}`,
     });
     return alerts;
   }
