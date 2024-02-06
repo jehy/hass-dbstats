@@ -46,12 +46,10 @@ export const AlertSet: FC<AlertSetProps> = ({api}) => {
         return null;
     }
     return (
-        <Card>
-            <CardContent>
+        <>
                 {
-                    data.map((el, index) => (<Alert key={index} severity={el.type}>{el.text}</Alert>))
+                    data.map((el, index) => (<Alert style={{marginTop: 15}} key={index} severity={el.type}>{el.text}</Alert>))
                 }
-            </CardContent>
-        </Card>
+        </>
     );
 }

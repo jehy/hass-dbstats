@@ -13,7 +13,7 @@ import {
     PointElement,
     Title, Tooltip
 } from "chart.js";
-import {Alert, Card, CardContent, Grid} from "@mui/material";
+import {Alert, Card, CardContent, CardHeader, Grid, Paper} from "@mui/material";
 import {SuspenseLoaderInline} from "../SuspenseLoader";
 import {Bar, Doughnut} from "react-chartjs-2";
 import autocolors from "chartjs-plugin-autocolors";
@@ -46,6 +46,7 @@ ChartJS.register(
 function MakeOptions(title: string) {
     return {
         responsive: true,
+        indexAxis: 'y',
         plugins: {
             colors: {
                 enabled: false
@@ -102,13 +103,12 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
     }
 
     return (
-        <Card>
-            <CardContent><Bar
+
+            <Bar
                 width={10}
                 height={5}
                 options={stats.options}
                 data={stats.data}
-            /></CardContent>
-        </Card>
+            />
     );
 }

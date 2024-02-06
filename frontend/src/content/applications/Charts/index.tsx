@@ -33,7 +33,7 @@ function DatabaseStats() {
                     alignItems="stretch"
                 >
                     <Grid item xs={12}>
-                        <Card style={{marginTop: 5}}>
+                        <Card style={{marginTop: 25}}>
                             <CardHeader title="Generic database stats"></CardHeader>
                             <CardContent>
                                 <Alert severity="info">If you are unfamiliar with HA tables, you can read about them <Link href="https://data.home-assistant.io/docs/data">here</Link></Alert>
@@ -43,7 +43,7 @@ function DatabaseStats() {
                                 <CountStatsChart api={apiClient.system.getTableSize}
                                                  title="Table size in MB"/>
                             </CardContent></Card>
-                        <Card style={{marginTop: 5}}>
+                        <Card style={{marginTop: 25}}>
                             <CardHeader title="Events"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.events.countEventTypes}
@@ -51,25 +51,25 @@ function DatabaseStats() {
                                 <CountStatsChart api={apiClient.events.countEventsByDomain}
                                                  title="Count events by domain"/>
                             </CardContent></Card>
-                        <Card style={{marginTop: 5}}>
+                        <Card style={{marginTop: 25}}>
                             <CardHeader title="States"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.states.countStates}
                                                  title="Count states"/>
                             </CardContent></Card>
-                        <Card style={{marginTop: 5}}>
+                        <Card style={{marginTop: 25}}>
                             <CardHeader title="Attributes"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.states.countAttributesSize}
                                                  title="Count attributes size, MB"/>
                             </CardContent></Card>
-                        <Card style={{marginTop: 5}}>
+                        <Card style={{marginTop: 25}}>
                             <CardHeader title="Long term statistics"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.statistic.countLong}
                                                  title="Count long term statistics"/>
                             </CardContent></Card>
-                        <Card style={{marginTop: 5}}>
+                        <Card style={{marginTop: 25}}>
                             <CardHeader title="Short term statistics"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.statistic.countShort}

@@ -23,7 +23,7 @@ export class StatisticService {
       .innerJoin(StatisticsMeta, 'meta', 'statistics.metadata_id=meta.id')
       .groupBy('meta.statistic_id')
       .orderBy('cnt', 'DESC')
-      .limit(20)
+      .limit(30)
       .execute();
     return data;
   }
@@ -36,7 +36,7 @@ export class StatisticService {
       .innerJoin(StatisticsMeta, 'meta', 'statistics.metadata_id=meta.id')
       .groupBy('meta.statistic_id')
       .orderBy('cnt', 'DESC')
-      .limit(20)
+      .limit(30)
       .execute();
     return data;
   }

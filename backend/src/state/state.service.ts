@@ -17,7 +17,7 @@ export class StateService {
     private stateAttributesRepository: Repository<StateAttributes>,
   ) {}
 
-  async countEventTypes(): Promise<Array<ICountStats>> {
+  async countStateTypes(): Promise<Array<ICountStats>> {
     //select m.entity_id, count(1) from states s, states_meta m where s.metadata_id=m.metadata_id group by m.entity_id
     const data = await this.statesRepository
       .createQueryBuilder('states')
@@ -29,7 +29,7 @@ export class StateService {
       )
       .groupBy('states_meta.entity_id')
       .orderBy('cnt', 'DESC')
-      .limit(10)
+      .limit(20)
       .execute();
     return data;
   }

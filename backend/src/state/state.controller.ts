@@ -7,7 +7,7 @@ export class StateController {
 
   @Get('countStates')
   async countEventTypes() {
-    return this.stateService.countEventTypes();
+    return this.stateService.countStateTypes();
   }
 
   @Get('countAttributesSize')
