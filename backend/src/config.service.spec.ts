@@ -85,6 +85,15 @@ describe('Config Service', () => {
       url: 'postgresql://***@192.168.66.30:5432/homeass',
     });
   });
+  it('should parse named include files with recorder', () => {
+    const res = new ConfigService(
+      path.join(__dirname, 'testConfigs/mysql_include'),
+    );
+    expect(res.data.typeOrmConfig).toEqual({
+      type: 'mysql',
+      url: 'mysql://root:***@192.168.66.30:5432/homeass?charset=utf8',
+    });
+  });
   it('should not fail if some files dont exist in reality', () => {
     const res = new ConfigService(
       path.join(__dirname, 'testConfigs/files_dont_exist'),

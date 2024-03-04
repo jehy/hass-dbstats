@@ -285,7 +285,7 @@ postgresql://@/DB_NAME?host=/path/to/dir
         path.join(path.dirname(absPath), fileName),
         haHomeDir,
       );
-      return { ...res, ...{ [fileName]: newData } };
+      return { ...res, ...{ [path.parse(fileName).name]: newData } };
     }, {});
     let loaded = {};
     try {
