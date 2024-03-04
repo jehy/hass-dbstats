@@ -1,0 +1,7 @@
+db_url: mysql://root:***@192.168.66.30:5432/homeass?charset=utf8
+purge_keep_days: 14
+commit_interval: 30
+include:
+  entities:
+    - sensor.ospel_wind_direction
+    - sensor.voltage_phase_l1

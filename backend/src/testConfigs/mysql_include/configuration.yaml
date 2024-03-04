@@ -1,0 +1,11 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+#notify: !include notifications.yaml
+recorder: !include recorder.yaml
+#vacuum: !include vacuum.yaml
+utility_meter:
