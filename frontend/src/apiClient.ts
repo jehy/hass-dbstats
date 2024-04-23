@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import type {ICountStats, IShowAlerts} from "@dbstats/shared/src/stats";
 
 import pLimit from 'p-limit';
@@ -128,7 +127,7 @@ async function getDbAlerts(): Promise<Array<IShowAlerts>> {
 }
 
 
-const limitMe = pLimit(2);
+const limitMe = pLimit(1);
 export default {
     events: {
         countEventTypes: ()=>limitMe(countEventTypes),

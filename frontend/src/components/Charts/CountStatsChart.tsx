@@ -1,8 +1,6 @@
 import type {FC} from "react";
 import { useEffect} from "react";
 import * as React from "react";
-import dayjs from "dayjs";
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 import type { ChartData} from 'chart.js';
 import { ArcElement, BarElement} from 'chart.js';
 import {
@@ -20,7 +18,6 @@ import autocolors from "chartjs-plugin-autocolors";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import type {ICountStats} from "@dbstats/shared/src/stats";
 
-dayjs.extend(customParseFormat);
 
 type CountStatesChartProps = {
     title: string,
