@@ -93,7 +93,7 @@ ORDER BY (data_length + index_length) DESC;`);
     );
   }
 
-  async getVerstion(): Promise<string> {
+  async getVersion(): Promise<string> {
     const dbType = configProvider().typeOrmConfig.type;
     if (dbType === 'sqlite') {
       const data = (await this.repoLong.manager.query(
@@ -123,7 +123,7 @@ ORDER BY (data_length + index_length) DESC;`);
     const dbType = configProvider().typeOrmConfig.type;
     let dbVersion = 'unknown';
     try {
-      dbVersion = await this.getVerstion();
+      dbVersion = await this.getVersion();
       if (dbVersion.length > 42) {
         dbVersion = dbVersion.substring(0, 42).trim() + '...';
       }

@@ -131,14 +131,12 @@ postgresql://@/DB_NAME?host=/path/to/dir
   ): Partial<DataSourceOptions> {
     const dbType = ConfigService.getDbTypeFromConnectionString(dbConnectString);
     if (dbType === 'sqlite') {
-      // https://www.sqlite.org/c3ref/c_open_autoproxy.html
-      // #define SQLITE_OPEN_READONLY         0x00000001  /* Ok for sqlite3_open_v2() */
       const database = dbConnectString.split('://')[1];
-      //const tmpFileRecovered = '/tmp/copy.recovered.db';
-      //childProcess.execSync(`sqlite3 ${database} ".clone ${tmpFileRecovered}"`);
       const options: SqliteConnectionOptions = {
         type: 'sqlite',
         database: database,
+        // https://www.sqlite.org/c3ref/c_open_autoproxy.html
+        // #define SQLITE_OPEN_READONLY         0x00000001  /* Ok for sqlite3_open_v2() */
         flags: 0x00000001,
       };
       return options;
@@ -147,6 +145,10 @@ postgresql://@/DB_NAME?host=/path/to/dir
       const options: PostgresConnectionOptions = {
         type: 'postgres',
         url: `postgresql://${dbConnectString.split('://')[1]}`,
+        extra: {
+          query_timeout: 60_000,
+          statement_timeout: 60_000, // one minute for a query to complete
+        },
       };
       return options;
     }
@@ -154,6 +156,9 @@ postgresql://@/DB_NAME?host=/path/to/dir
       const options: MysqlConnectionOptions = {
         type: 'mysql',
         url: `mysql://${dbConnectString.split('://')[1]}`,
+        extra: {
+          options: '--max_execution_time=60000',
+        },
       };
       return options;
     }
