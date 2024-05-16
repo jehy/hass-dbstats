@@ -146,8 +146,8 @@ postgresql://@/DB_NAME?host=/path/to/dir
         type: 'postgres',
         url: `postgresql://${dbConnectString.split('://')[1]}`,
         extra: {
-          query_timeout: 60_000,
-          statement_timeout: 60_000, // one minute for a query to complete
+          query_timeout: 180_000,
+          statement_timeout: 180_000, // three minutes for a query to complete
         },
       };
       return options;
@@ -157,7 +157,7 @@ postgresql://@/DB_NAME?host=/path/to/dir
         type: 'mysql',
         url: `mysql://${dbConnectString.split('://')[1]}`,
         extra: {
-          options: '--max_execution_time=60000',
+          options: '--max_execution_time=180000',
         },
       };
       return options;

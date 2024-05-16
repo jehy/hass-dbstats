@@ -35,6 +35,22 @@ export class StateService {
   }
 
   async countAttributesSize(): Promise<Array<ICountStats>> {
+    const query = `select attr2entity.entity_id type, sum(length(a.shared_attrs))/1024.0/1024.0 size
+from (select distinct state_attributes.attributes_id, states_meta.entity_id from state_attributes, states, states_meta
+where state_attributes.attributes_id=states.attributes_id and states_meta.metadata_id=states.metadata_id) attr2entity, state_attributes a
+where a.attributes_id=attr2entity.attributes_id group by attr2entity.entity_id order by size desc limit 20`;
+
+    const res = (await this.stateAttributesRepository.manager.query(
+      query,
+    )) as Array<{ type: string; size: number }>;
+    return res.map((el) => {
+      return {
+        type: el.type,
+        cnt: badRoundFunction(el.size),
+      };
+    });
+    /*
+    Old version:
     const attributesLength = (await this.stateAttributesRepository
       .createQueryBuilder('a')
       .select('a.attributes_id, length(a.shared_attrs) len')
@@ -67,6 +83,6 @@ export class StateService {
           cnt: badRoundFunction(byEntity[key] / 1024 / 1024),
         };
       });
-    return res;
+    return res;*/
   }
 }
