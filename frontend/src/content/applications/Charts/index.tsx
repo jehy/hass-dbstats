@@ -61,7 +61,7 @@ function DatabaseStats() {
                             <CardHeader title="Attributes"></CardHeader>
                             <CardContent>
                                 <CountStatsChart api={apiClient.states.countAttributesSize}
-                                                 title="Count attributes size, MB"/>
+                                                 title="Shared attributes size, MB"/>
                             </CardContent></Card>
                         <Card style={{marginTop: 25}}>
                             <CardHeader title="Long term statistics"></CardHeader>
