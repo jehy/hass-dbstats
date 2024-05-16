@@ -10,8 +10,8 @@ describe('Config Service', () => {
       type: 'postgres',
       url: 'postgresql://***@192.168.66.30:5432/homeass',
       extra: {
-        query_timeout: 60_000,
-        statement_timeout: 60_000, // one minute for a query to complete
+        query_timeout: 180_000,
+        statement_timeout: 180_000, // one minute for a query to complete
       },
     });
   });
@@ -23,8 +23,8 @@ describe('Config Service', () => {
       type: 'postgres',
       url: 'postgresql://***@192.168.66.30:5432/homeass',
       extra: {
-        query_timeout: 60_000,
-        statement_timeout: 60_000, // one minute for a query to complete
+        query_timeout: 180_000,
+        statement_timeout: 180_000, // one minute for a query to complete
       },
     });
   });
@@ -36,8 +36,8 @@ describe('Config Service', () => {
       type: 'postgres',
       url: 'postgresql://***@192.168.66.30:5432/homeass',
       extra: {
-        query_timeout: 60_000,
-        statement_timeout: 60_000, // one minute for a query to complete
+        query_timeout: 180_000,
+        statement_timeout: 180_000, // one minute for a query to complete
       },
     });
   });
@@ -49,8 +49,8 @@ describe('Config Service', () => {
       type: 'postgres',
       url: 'postgresql://***@192.168.66.30:5432/homeass',
       extra: {
-        query_timeout: 60_000,
-        statement_timeout: 60_000, // one minute for a query to complete
+        query_timeout: 180_000,
+        statement_timeout: 180_000, // one minute for a query to complete
       },
     });
   });
@@ -62,8 +62,8 @@ describe('Config Service', () => {
       type: 'postgres',
       url: 'postgresql://***@192.168.66.30:5432/homeass',
       extra: {
-        query_timeout: 60_000,
-        statement_timeout: 60_000, // one minute for a query to complete
+        query_timeout: 180_000,
+        statement_timeout: 180_000, // one minute for a query to complete
       },
     });
   });
@@ -104,8 +104,8 @@ describe('Config Service', () => {
       type: 'postgres',
       url: 'postgresql://***@192.168.66.30:5432/homeass',
       extra: {
-        query_timeout: 60_000,
-        statement_timeout: 60_000, // one minute for a query to complete
+        query_timeout: 180_000,
+        statement_timeout: 180_000, // one minute for a query to complete
       },
     });
   });
@@ -117,7 +117,7 @@ describe('Config Service', () => {
       type: 'mysql',
       url: 'mysql://root:***@192.168.66.30:5432/homeass?charset=utf8',
       extra: {
-        options: '--max_execution_time=60000',
+        options: '--max_execution_time=180000',
       },
     });
   });
@@ -129,8 +129,8 @@ describe('Config Service', () => {
       type: 'postgres',
       url: 'postgresql://***@192.168.66.30:5432/homeass',
       extra: {
-        query_timeout: 60_000,
-        statement_timeout: 60_000, // one minute for a query to complete
+        query_timeout: 180_000,
+        statement_timeout: 180_000, // one minute for a query to complete
       },
     });
   });
