@@ -5,6 +5,9 @@ import { States } from '../entities/homeass/2024.1.5/States';
 import { StatesMeta } from '../entities/homeass/2024.1.5/StatesMeta';
 import type { ICountStats } from '@dbstats/shared/src/stats';
 import { StateAttributes } from '../entities/homeass/2024.1.5/StateAttributes';
+import config from '../config';
+
+const { maxRowsInChart } = config();
 
 const badRoundFunction = (num) => Math.round(num * 100) / 100;
 
@@ -29,7 +32,7 @@ export class StateService {
       )
       .groupBy('states_meta.entity_id')
       .orderBy('cnt', 'DESC')
-      .limit(20)
+      .limit(maxRowsInChart)
       .execute();
     return data;
   }

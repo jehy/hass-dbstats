@@ -17,6 +17,7 @@ export type ConfigData = {
   server: {
     port: number;
   };
+  maxRowsInChart: number;
 };
 
 function findKey(object: Record<string, unknown>, key: string) {
@@ -59,6 +60,7 @@ export class ConfigService {
       server: {
         port: parseInt(env.SERVER_PORT, 10) || 3000,
       },
+      maxRowsInChart: parseInt(env.MAX_ROWS_IN_CHART, 10) || 30,
     };
     Object.freeze(this.data);
     const errorMessages = [];
@@ -130,6 +132,8 @@ postgresql://@/DB_NAME?host=/path/to/dir
     dbConnectString: string,
   ): Partial<DataSourceOptions> {
     const dbType = ConfigService.getDbTypeFromConnectionString(dbConnectString);
+    const { env } = process;
+    const queryTimeout = parseInt(env.DB_QUERY_TIMEOUT, 10) || 180_000;
     if (dbType === 'sqlite') {
       const database = dbConnectString.split('://')[1];
       const options: SqliteConnectionOptions = {
@@ -146,8 +150,8 @@ postgresql://@/DB_NAME?host=/path/to/dir
         type: 'postgres',
         url: `postgresql://${dbConnectString.split('://')[1]}`,
         extra: {
-          query_timeout: 180_000,
-          statement_timeout: 180_000, // three minutes for a query to complete
+          query_timeout: queryTimeout,
+          statement_timeout: queryTimeout, // three minutes for a query to complete
         },
       };
       return options;
@@ -157,7 +161,7 @@ postgresql://@/DB_NAME?host=/path/to/dir
         type: 'mysql',
         url: `mysql://${dbConnectString.split('://')[1]}`,
         extra: {
-          options: '--max_execution_time=180000',
+          options: `--max_execution_time=${queryTimeout}`,
         },
       };
       return options;

@@ -5,6 +5,9 @@ import { StatisticsShortTerm } from '../entities/homeass/2024.1.5/StatisticsShor
 import { Statistics } from '../entities/homeass/2024.1.5/Statistics';
 import { StatisticsMeta } from '../entities/homeass/2024.1.5/StatisticsMeta';
 import type { ICountStats } from '@dbstats/shared/src/stats';
+import config from '../config';
+
+const { maxRowsInChart } = config();
 
 @Injectable()
 export class StatisticService {
@@ -23,7 +26,7 @@ export class StatisticService {
       .innerJoin(StatisticsMeta, 'meta', 'statistics.metadata_id=meta.id')
       .groupBy('meta.statistic_id')
       .orderBy('cnt', 'DESC')
-      .limit(30)
+      .limit(maxRowsInChart)
       .execute();
     return data;
   }
@@ -36,7 +39,7 @@ export class StatisticService {
       .innerJoin(StatisticsMeta, 'meta', 'statistics.metadata_id=meta.id')
       .groupBy('meta.statistic_id')
       .orderBy('cnt', 'DESC')
-      .limit(30)
+      .limit(maxRowsInChart)
       .execute();
     return data;
   }

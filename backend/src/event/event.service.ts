@@ -5,7 +5,9 @@ import { Events } from '../entities/homeass/2024.1.5/Events';
 import { EventTypes } from '../entities/homeass/2024.1.5/EventTypes';
 import type { ICountStats } from '@dbstats/shared/src/stats';
 import { EventData } from '../entities/homeass/2024.1.5/EventData';
+import config from '../config';
 
+const { maxRowsInChart } = config();
 @Injectable()
 export class EventService {
   constructor(
@@ -28,7 +30,7 @@ export class EventService {
       )
       .groupBy('types.event_type')
       .orderBy('cnt', 'DESC')
-      .limit(10)
+      .limit(maxRowsInChart)
       .execute();
     return data;
   }
@@ -49,7 +51,7 @@ export class EventService {
       }, {});
     return Object.keys(data)
       .sort((a, b) => data[b] - data[a])
-      .slice(0, 10)
+      .slice(0, maxRowsInChart)
       .map((key) => {
         return { type: key, cnt: data[key] };
       });
