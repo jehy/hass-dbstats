@@ -52,9 +52,6 @@ function MakeOptions(title: string) {
                 enabled: true,
                 mode: 'data',
             },
-            legend: {
-                position: 'top' as const,
-            },
             title: {
                 display: true,
                 text: title,
@@ -103,7 +100,7 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
 
             <Bar
                 width={10}
-                height={5}
+                height={stats.data.labels.length/3}
                 options={stats.options}
                 data={stats.data}
             />

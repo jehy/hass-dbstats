@@ -46,12 +46,14 @@ where a.attributes_id=attr2entity.attributes_id group by attr2entity.entity_id o
     const res = (await this.stateAttributesRepository.manager.query(
       query,
     )) as Array<{ type: string; size: number }>;
-    return res.map((el) => {
-      return {
-        type: el.type,
-        cnt: badRoundFunction(el.size),
-      };
-    });
+    return res
+      .filter((el) => el.size > 0.01)
+      .map((el) => {
+        return {
+          type: el.type,
+          cnt: badRoundFunction(el.size),
+        };
+      });
     /*
     Old version:
     const attributesLength = (await this.stateAttributesRepository
