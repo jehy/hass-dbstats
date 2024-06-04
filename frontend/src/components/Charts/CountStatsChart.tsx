@@ -1,63 +1,17 @@
 import type {FC} from "react";
 import { useEffect} from "react";
 import * as React from "react";
-import type { ChartData} from 'chart.js';
-import { ArcElement, BarElement} from 'chart.js';
-import {
-    CategoryScale,
-    Chart as ChartJS, Filler, Legend,
-    LinearScale,
-    LineElement,
-    PointElement,
-    Title, Tooltip
-} from "chart.js";
+import Chart from "react-apexcharts";
 import {Alert, Card, CardContent, CardHeader, Grid, Paper} from "@mui/material";
 import {SuspenseLoaderInline} from "../SuspenseLoader";
-import {Bar, Doughnut} from "react-chartjs-2";
-import autocolors from "chartjs-plugin-autocolors";
-import ChartDataLabels from "chartjs-plugin-datalabels";
 import type {ICountStats} from "@dbstats/shared/src/stats";
+import type {ApexOptions} from "apexcharts";
+import distinctColors from "distinct-colors";
 
 
 type CountStatesChartProps = {
     title: string,
     api: () => Promise<Array< ICountStats >>,
-}
-
-
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    autocolors,
-    Filler,
-    ChartDataLabels,
-    ArcElement,
-    BarElement,
-);
-
-function MakeOptions(title: string) {
-    return {
-        responsive: true,
-        indexAxis: 'y',
-        plugins: {
-            colors: {
-                enabled: false
-            },
-            autocolors: {
-                enabled: true,
-                mode: 'data',
-            },
-            title: {
-                display: true,
-                text: title,
-            },
-        },
-    };
 }
 
 export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
@@ -72,11 +26,35 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
         const fetchData = async () => {
             setLoading(true);
             const data = await api();
-            const byWeekData: ChartData = {
-                labels: data.map(item=>item.type),
-                datasets: [{data: data.map(item=>item.cnt), label: ''}],
+
+            const state: {options: ApexOptions, series: ApexAxisChartSeries } = {
+                options: {colors: distinctColors({count: 30}).map(c=>c.hex()),
+                    legend: {
+                        show: false,
+                    },
+                    title: {text: title},
+                    chart: {
+                    },
+                    plotOptions: {
+                        bar: {
+                            distributed: true,
+                            borderRadius: 4,
+                            borderRadiusApplication: 'end',
+                            horizontal: true,
+                        }
+                    },
+                    xaxis: {
+                        categories: data.map(item=>item.type)
+                    }
+                },
+                series: [
+                    {
+                        name: "",
+                        data: data.map(item=>item.cnt)
+                    }
+                ]
             };
-            setStats({data: byWeekData, options: MakeOptions(title)});
+            setStats(state);
             setLoading(false);
         }
         fetchData()
@@ -97,12 +75,11 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
     }
 
     return (
-
-            <Bar
-                width={10}
-                height={stats.data.labels.length/3}
+            <Chart
                 options={stats.options}
-                data={stats.data}
+                series={stats.series}
+                type="bar"
+                width="100%"
             />
     );
 }
