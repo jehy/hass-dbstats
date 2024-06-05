@@ -1,5 +1,5 @@
 import type {FC} from "react";
-import { useEffect} from "react";
+import {useEffect} from "react";
 import * as React from "react";
 import Chart from "react-apexcharts";
 import {Alert, Card, CardContent, CardHeader, Grid, Paper} from "@mui/material";
@@ -11,8 +11,9 @@ import distinctColors from "distinct-colors";
 
 type CountStatesChartProps = {
     title: string,
-    api: () => Promise<Array< ICountStats >>,
+    api: () => Promise<Array<ICountStats>>,
 }
+const colors = distinctColors({count: 50}).map(c => c.hex());
 
 export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
 
@@ -27,14 +28,14 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
             setLoading(true);
             const data = await api();
 
-            const state: {options: ApexOptions, series: ApexAxisChartSeries } = {
-                options: {colors: distinctColors({count: 30}).map(c=>c.hex()),
+            const state: { options: ApexOptions, series: ApexAxisChartSeries } = {
+                options: {
+                    colors,
                     legend: {
                         show: false,
                     },
-                    title: {text: title},
-                    chart: {
-                    },
+                    title: {text: title, align: "center"},
+                    chart: {},
                     plotOptions: {
                         bar: {
                             distributed: true,
@@ -42,15 +43,33 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
                             borderRadiusApplication: 'end',
                             horizontal: true,
                         }
+                    }, dataLabels: {
+                        style: {fontSize: "14"}
+                    },
+                    yaxis: {
+                        floating: false,
+                        labels: {
+                            maxWidth: 230,
+                            align: 'right',
+                            style: {
+                                fontSize: "14",
+                            },
+                        },
                     },
                     xaxis: {
-                        categories: data.map(item=>item.type)
+                        categories: data.map(item => item.type),
+                        labels: {
+                            trim: false,
+                            style: {
+                                fontSize: "14",
+                            },
+                        },
                     }
                 },
                 series: [
                     {
                         name: "",
-                        data: data.map(item=>item.cnt)
+                        data: data.map(item => item.cnt)
                     }
                 ]
             };
@@ -63,7 +82,7 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
     }
 
     useEffect(loadStats, []);
-    useEffect( () => {
+    useEffect(() => {
         loadStats();
     }, []);
     if (errorMessageLoad) {
@@ -75,11 +94,11 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
     }
 
     return (
-            <Chart
-                options={stats.options}
-                series={stats.series}
-                type="bar"
-                width="100%"
-            />
+        <Chart style={{marginTop: 25}}
+               options={stats.options}
+               series={stats.series}
+               type="bar"
+               width="100%"
+        />
     );
 }
