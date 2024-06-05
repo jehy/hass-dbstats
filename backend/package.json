@@ -13,6 +13,7 @@
     "clean": "rimraf dist",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "start-local-db": "DB_CONNECT_STRING=sqlite:///home/evgeny-bond/Downloads/home-assistant_v2.db npm start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/backend/src/main",
