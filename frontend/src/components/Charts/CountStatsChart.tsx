@@ -13,6 +13,14 @@ type CountStatesChartProps = {
     api: () => Promise<Array<ICountStats>>,
 }
 
+function thousandFormatter(value: string): string {
+    const num = typeof value === 'string' ? parseInt(value, 10) : value;
+    if (num < 1000) {
+        return num.toString();
+    }
+    return num.toLocaleString('en-us');
+}
+
 export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
 
     const [loading, setLoading] = React.useState(true);
@@ -42,12 +50,13 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
                             horizontal: true,
                         }
                     }, dataLabels: {
-                        style: {fontSize: "14"}
+                        style: {fontSize: "14"},
+                        //formatter: thousandFormatter,
                     },
                     yaxis: {
                         floating: false,
                         labels: {
-                            maxWidth: 230,
+                            maxWidth: 700,
                             align: 'right',
                             style: {
                                 fontSize: "14",
@@ -57,6 +66,7 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
                     xaxis: {
                         categories: data.map(item => item.type),
                         labels: {
+                            formatter: thousandFormatter,
                             trim: false,
                             style: {
                                 fontSize: "14",
@@ -97,7 +107,7 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
                series={stats.series}
                type="bar"
                width="100%"
-               height={stats.series[0].data.length*45}
+               height={stats.series[0].data.length * 45}
         />
     );
 }
