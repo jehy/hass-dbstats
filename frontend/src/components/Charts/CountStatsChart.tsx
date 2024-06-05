@@ -2,18 +2,16 @@ import type {FC} from "react";
 import {useEffect} from "react";
 import * as React from "react";
 import Chart from "react-apexcharts";
-import {Alert, Card, CardContent, CardHeader, Grid, Paper} from "@mui/material";
+import {Alert} from "@mui/material";
 import {SuspenseLoaderInline} from "../SuspenseLoader";
 import type {ICountStats} from "@dbstats/shared/src/stats";
 import type {ApexOptions} from "apexcharts";
-import distinctColors from "distinct-colors";
-
+import colors from "./colors";
 
 type CountStatesChartProps = {
     title: string,
     api: () => Promise<Array<ICountStats>>,
 }
-const colors = distinctColors({count: 50}).map(c => c.hex());
 
 export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
 
@@ -30,7 +28,7 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
 
             const state: { options: ApexOptions, series: ApexAxisChartSeries } = {
                 options: {
-                    colors,
+                    colors: colors(data.length),
                     legend: {
                         show: false,
                     },
@@ -87,7 +85,7 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
     }, []);
     if (errorMessageLoad) {
         return (
-            <Alert severity="error">{errorMessageLoad}</Alert>)
+            <Alert style={{marginTop: 25}} severity="error">{errorMessageLoad}</Alert>)
     }
     if (loading) {
         return <SuspenseLoaderInline success={false}></SuspenseLoaderInline>;
@@ -99,6 +97,7 @@ export const CountStatsChart: FC<CountStatesChartProps> = ({title, api}) => {
                series={stats.series}
                type="bar"
                width="100%"
+               height={stats.series[0].data.length*45}
         />
     );
 }
