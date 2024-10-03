@@ -5,7 +5,7 @@
   "description": "dbstats for home assistant",
   "license": "MIT",
   "engines": {
-    "node": "^20"
+    "node": "^22"
   },
   "scripts": {
     "command": "nest start --entryFile cli-main",

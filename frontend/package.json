@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "title": "dbstats Dashboard",
   "engines": {
-    "node": "^20"
+    "node": "^22"
   },
   "proxy": "http://localhost:3000",
   "private": true,
@@ -44,7 +44,7 @@
     "source-map-explorer": "2.5.3",
     "stylis": "4.3.0",
     "stylis-plugin-rtl": "2.1.1",
-    "typescript": "5.6.2",
+    "typescript": "5.1.6",
     "web-vitals": "3.3.2"
   },
   "scripts": {
