@@ -44,9 +44,8 @@ export class SystemService {
       return data;
     }
     if (dbType === 'mysql') {
-      // TODO: get only table rows from HA
       const data = await this.repoLong.manager.query(
-        `SELECT table_name type, TABLE_ROWS cnt FROM INFORMATION_SCHEMA.TABLES order by TABLE_ROWS DESC`,
+        `SELECT table_name type, TABLE_ROWS cnt FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = DATABASE() order by TABLE_ROWS DESC`,
       );
       return data;
     }
