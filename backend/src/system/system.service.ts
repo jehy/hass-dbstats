@@ -78,12 +78,11 @@ export class SystemService {
       return data;
     }
     if (dbType === 'mysql') {
-      // TODO: get only table rows from HA
       const data = await this.repoLong.manager.query(`SELECT 
      table_schema as \`Database\`, 
      table_name type, 
      round(((data_length + index_length) / 1024 / 1024), 2) cnt 
-FROM information_schema.TABLES 
+FROM information_schema.TABLES  WHERE table_schema = DATABASE()
 ORDER BY (data_length + index_length) DESC;`);
       return data;
     }
