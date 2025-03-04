@@ -1,5 +1,5 @@
 # App should be already built built at tis moment locally or via github actions
-FROM node:22.9.0-alpine
+FROM node:22.14.0-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
