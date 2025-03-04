@@ -26,10 +26,10 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}.{{patch}}
             type=semver,pattern={{major}}
             type=raw,value=stable
-      - name: Use Node.js 22.9.0
+      - name: Use Node.js 22.14.0
         uses: actions/setup-node@v4
         with:
-          node-version: 22.9.0
+          node-version: 22.14.0
       - name: 'change backend version'
         uses: reedyuk/npm-version@1.2.2
         with:
