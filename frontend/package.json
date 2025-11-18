@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "title": "dbstats Dashboard",
   "engines": {
-    "node": "^22"
+    "node": "^24"
   },
   "proxy": "http://localhost:3000",
   "private": true,

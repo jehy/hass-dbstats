@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "title": "Common entities dbstats",
   "engines": {
-    "node": "^20"
+    "node": "^24"
   },
   "private": true,
   "devDependencies": {

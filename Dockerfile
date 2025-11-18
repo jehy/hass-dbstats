@@ -1,5 +1,4 @@
-# App should be already built built at tis moment locally or via github actions
-FROM node:22.14.0-alpine
+FROM node:24.11.1-alpine
 
 # native modules building needs python and it's setuptools
 RUN apk add --no-cache --update python3 make g++ py3-pip py3-setuptools
