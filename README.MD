@@ -48,3 +48,4 @@ Please note that you should **either** pass **DB_CONNECT_STRING** or set volume 
 ### Optional env variables:
 * `DB_QUERY_TIMEOUT` - max time for SQL queries to avoid hanging your database forever, defaults to 180 sec
 * `MAX_ROWS_IN_CHART` - maximum rows in each chart, defaults to 30. Does not make things slower or faster, just set to suitable value for your database
+* `BASE_PATH` - URL path prefix the app is served under (e.g. `/dbstats`), useful for reverse proxies such as hass_ingress. Defaults to empty (root)
