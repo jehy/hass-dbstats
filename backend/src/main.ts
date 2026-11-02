@@ -31,12 +31,30 @@ async function bootstrap() {
       next();
     });
   }
+  // The frontend uses absolute asset URLs (the official add-on nginx rewrites
+  // them); with a base path set they are prefixed here at serve time.
   const serveIndex = (_req: Request, res: Response) => {
-    const html = readFileSync(join(staticRoot, 'index.html'), 'utf8').replace(
-      /<base href="[^"]*"\s*\/?>/,
-      `<base href="${base}/" />`,
-    );
+    let html = readFileSync(join(staticRoot, 'index.html'), 'utf8');
+    if (base) {
+      html = html
+        .replace(/(href|src)="\/(?!\/)/g, `$1="${base}/`)
+        .replace('<head>', `<head><base href="${base}/" />`);
+    }
     res.type('html').send(html);
+  };
+  const serveBundle = (req: Request, res: Response, next: NextFunction) => {
+    if (!base || !/^\/static\/js\/[^/]+\.js$/.test(req.path)) {
+      return next();
+    }
+    try {
+      const js = readFileSync(join(staticRoot, req.path), 'utf8').replace(
+        /\.p="\/"/,
+        `.p="${base}/"`,
+      );
+      res.type('js').send(js);
+    } catch {
+      next();
+    }
   };
   const staticHandler = serveStatic(staticRoot, { index: false });
   app.use(base || '/', (req: Request, res: Response, next: NextFunction) => {
@@ -49,8 +67,10 @@ async function bootstrap() {
     if (req.path === '/' || req.path === '/index.html') {
       return serveIndex(req, res);
     }
-    staticHandler(req, res, (err?: unknown) =>
-      err ? next(err) : serveIndex(req, res),
+    serveBundle(req, res, () =>
+      staticHandler(req, res, (err?: unknown) =>
+        err ? next(err) : serveIndex(req, res),
+      ),
     );
   });
   app.use(json({ limit: '5mb' }));
